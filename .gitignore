@@ -1,4 +1,6 @@
+# ================================
 # Logs
+# ================================
 logs
 *.log
 npm-debug.log*
@@ -7,61 +9,63 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# ================================
+# Node.js / Vite
+# ================================
+node_modules/
+dist/
+dist-ssr/
 
+# Local environment/config files
+*.local
+
+# ================================
+# Environment Files / Secrets
+# ================================
+.env
+.env.*
+*.env
+
+backend/.env
+backend/.env.*
+backend/.env.local
+backend/.env.production
+
+# ================================
+# Python / Django
+# ================================
+venv/
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Django generated/static files
+staticfiles/
+backend/staticfiles/
+media/
+
+# Temporary files
+backend/.tmp
+
+# ================================
 # Editor directories and files
+# ================================
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-# Virtual environment
-venv/
-venv/venv/
-# env/
-# .env
-# *.env
-backend/.env.local
 
-# Python cache
-__pycache__/
-*.py[cod]
-*.pyc
-
-# IDE files (optional)
-.vscode/
-.idea/
-/backend/.tmp
-
-# Environment files
-.env
-.env.*
-*.env
-backend/.env
-backend/.env.*
-backend/.env.local
-backend/.env.production
-
-# Django generated/static files
-backend/staticfiles/
-staticfiles/
-media/
-
-# Secrets / keys
+# ================================
+# Secrets / Keys
+# ================================
 *.pem
 *.key
 id_rsa
 id_rsa.pub
 *.pfx
 *.crt
-backend/.env
-backend/.env.*
-.env
-.env.*
-
