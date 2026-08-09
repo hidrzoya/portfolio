@@ -22,13 +22,15 @@ class VercelBlobStorage(Storage):
 
     @property
     def uses_blob(self):
-        return bool(getattr(settings, "BLOB_READ_WRITE_TOKEN", ""))
+        # Production Vercel connections may authenticate through OIDC and do
+        # not expose a long-lived BLOB_READ_WRITE_TOKEN variable.
+        return not settings.DEBUG or bool(getattr(settings, "BLOB_READ_WRITE_TOKEN", ""))
 
     def _blob_client(self):
         if self._client is None:
             from vercel.blob import BlobClient
 
-            self._client = BlobClient(token=settings.BLOB_READ_WRITE_TOKEN)
+            self._client = BlobClient(token=getattr(settings, "BLOB_READ_WRITE_TOKEN", "") or None)
         return self._client
 
     def _save(self, name, content):

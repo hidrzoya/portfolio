@@ -18,7 +18,6 @@ required_settings = {
     "CORS_ALLOWED_ORIGINS": CORS_ALLOWED_ORIGINS,
     "CSRF_TRUSTED_ORIGINS": CSRF_TRUSTED_ORIGINS,
     "DATABASE_URL": DATABASE_URL,
-    "BLOB_READ_WRITE_TOKEN": BLOB_READ_WRITE_TOKEN,
 }
 missing_settings = [name for name, value in required_settings.items() if not value]
 if missing_settings:
