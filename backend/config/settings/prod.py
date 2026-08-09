@@ -4,7 +4,10 @@ from django.core.exceptions import ImproperlyConfigured
 DEBUG = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+# Vercel terminates TLS before forwarding requests to Django. The public
+# deployment is HTTPS-only, so an application-level redirect would create a
+# redirect response when the platform omits the forwarded-proto header.
+SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "False").lower() == "true"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 31_536_000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
