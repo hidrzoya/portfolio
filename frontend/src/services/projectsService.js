@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
+
+if (!API_BASE_URL) throw new Error('VITE_API_BASE_URL must be set for production builds.')
 
 export const resolveImageUrl = (image) => image?.startsWith('http') ? image : image ? `${API_BASE_URL}${image}` : null
 

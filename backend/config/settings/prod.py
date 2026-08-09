@@ -1,25 +1,27 @@
-from pathlib import Path
-
-from dotenv import load_dotenv
-
-BASE_DIR = Path(__file__).resolve().parents[2]
-load_dotenv(BASE_DIR / ".env.prod")
-load_dotenv(BASE_DIR / ".env")
-
 from .base import *  # noqa: F401,F403
+from django.core.exceptions import ImproperlyConfigured
 
 DEBUG = False
-ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", "")
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "")
-CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "")
-
-# FOR SSO
-# AZURE_AD_REDIRECT_URI = os.getenv("AZURE_AD_REDIRECT_URI", "") 
-# POST_LOGOUT_REDIRECT_URI = os.getenv("POST_LOGOUT_REDIRECT_URI", "")
-# REACT_APP_URL = os.getenv("REACT_APP_URL", "")
-
-
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_HSTS_SECONDS = 31_536_000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+
+required_settings = {
+    "SECRET_KEY": SECRET_KEY,
+    "ALLOWED_HOSTS": ALLOWED_HOSTS,
+    "CORS_ALLOWED_ORIGINS": CORS_ALLOWED_ORIGINS,
+    "CSRF_TRUSTED_ORIGINS": CSRF_TRUSTED_ORIGINS,
+    "DATABASE_URL": DATABASE_URL,
+    "BLOB_READ_WRITE_TOKEN": BLOB_READ_WRITE_TOKEN,
+}
+missing_settings = [name for name, value in required_settings.items() if not value]
+if missing_settings:
+    raise ImproperlyConfigured(
+        "Missing required production environment variables: " + ", ".join(missing_settings)
+    )

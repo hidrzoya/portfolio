@@ -1,11 +1,16 @@
 from django.db import models
 
+from .storage import VercelBlobStorage
+
+
+project_image_storage = VercelBlobStorage()
+
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     tech_stack = models.CharField(max_length=500, help_text="Comma-separated technologies")
-    image = models.ImageField(upload_to="projects/", blank=True, null=True)
+    image = models.ImageField(upload_to="projects/", storage=project_image_storage, blank=True, null=True)
     project_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     display_order = models.PositiveIntegerField(
@@ -23,7 +28,7 @@ class Project(models.Model):
 
 class ProjectImage(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="projects/gallery/")
+    image = models.ImageField(upload_to="projects/gallery/", storage=project_image_storage)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

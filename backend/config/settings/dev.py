@@ -12,7 +12,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 # A fresh local checkout should be able to run Django commands without a
 # PostgreSQL service.  Provide DB_* values in .env.local to use PostgreSQL.
-if not os.getenv("DB_NAME"):
+if not os.getenv("DB_NAME") and not os.getenv("DATABASE_URL"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",

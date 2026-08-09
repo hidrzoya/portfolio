@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-from datetime import timedelta
+
+import dj_database_url
 
 # =========================================================================
 # PATHS & ENVIRONMENT
@@ -22,10 +23,10 @@ def env_list(name, default=None):
 # names remain as fallbacks so existing deployments do not break.
 SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("DSECRET_KEY", "")
 DEBUG = (os.getenv("DEBUG") or os.getenv("DJANGO_DEBUG", "False")).lower() == "true"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS")
 
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS")
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS")
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
+CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS")
 CORS_ALLOW_CREDENTIALS = True
 
 AZURE_AD_REDIRECT_URI = os.getenv("AZURE_AD_REDIRECT_URI", "")
@@ -38,6 +39,7 @@ LOCAL_DEV_AUTH_FIRST_NAME = os.getenv("LOCAL_DEV_AUTH_FIRST_NAME", "Test")
 LOCAL_DEV_AUTH_LAST_NAME = os.getenv("LOCAL_DEV_AUTH_LAST_NAME", "User")
 # APP_NAME = os.getenv("APP_NAME", "MyApp")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+BLOB_READ_WRITE_TOKEN = os.getenv("BLOB_READ_WRITE_TOKEN", "")
 
 # =========================================================================
 # DJANGO APPS & MIDDLEWARE
@@ -95,19 +97,30 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT", "5432"),
-        "OPTIONS": {
-            "sslmode": os.getenv("DB_SSLMODE", "disable"),
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+            "OPTIONS": {
+                "sslmode": os.getenv("DB_SSLMODE", "disable"),
+            },
         }
     }
-}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -130,6 +143,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
