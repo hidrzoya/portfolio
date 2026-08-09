@@ -45,7 +45,8 @@ class Command(BaseCommand):
                 users = self._rows(source, "auth_user")
                 notes = self._rows(source, "notes_note")
                 projects = self._rows(source, "projects_project")
-                gallery_images = self._rows(source, "projects_projectimage")
+                # Older local databases may predate the gallery-image migration.
+                gallery_images = self._rows(source, "projects_projectimage", optional=True)
 
                 self._import_users(users)
                 self._import_notes(notes)
@@ -62,10 +63,12 @@ class Command(BaseCommand):
         )
 
     @staticmethod
-    def _rows(connection, table):
+    def _rows(connection, table, optional=False):
         try:
             return connection.execute(f"SELECT * FROM {table}").fetchall()
         except sqlite3.OperationalError as error:
+            if optional and "no such table" in str(error):
+                return []
             raise CommandError(f"Could not read expected table {table}: {error}") from error
 
     def _import_users(self, rows):
